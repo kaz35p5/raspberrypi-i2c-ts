@@ -1,0 +1,48 @@
+// SPDX-License-Identifier: GPL-2.0
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "brcm,bcm2835";
+
+	fragment@10 {
+		target = <&rpi_i2c_ts>;
+		__overlay__ {
+			touchscreen-inverted-x;
+		};
+	};
+
+	fragment@11 {
+		target = <&rpi_i2c_ts>;
+		__overlay__ {
+			touchscreen-inverted-y;
+		};
+	};
+
+	rpi_i2c_ts_frag: fragment@12 {
+		target = <&i2c_csi_dsi>;
+		__overlay__ {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			status = "okay";
+
+			rpi_i2c_ts: rpi_ts@38 {
+				compatible = "raspberrypi,i2c-ts";
+				reg = <0x38>;
+
+				touchscreen-size-x = < 800 >;
+				touchscreen-size-y = < 480 >;
+			};
+		};
+	};
+
+	__overrides__ {
+		sizex = <&rpi_i2c_ts>,"touchscreen-size-x:0";
+		sizey = <&rpi_i2c_ts>,"touchscreen-size-y:0";
+		invx = <0>, "-10";
+		invy = <0>, "-11";
+		swapxy = <&rpi_i2c_ts>,"touchscreen-swapped-x-y?";
+		addr = <&rpi_i2c_ts>,"reg:0";
+		dsi0 = <&rpi_i2c_ts_frag>, "target:0=",<&i2c_csi_dsi0>;
+	};
+};
