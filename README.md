@@ -2,6 +2,25 @@
 
 raspberrypi-ts ドライバをi2c用に改造した raspberrypi-i2c-ts ドライバ。
 
+
+## How to build
+
+```
+make DTC=/usr/bin/dtc
+sudo make install
+sudo depmod -A
+sudo cp rpi-i2c-ts.dtbo /boot/overlays/
+```
+
+linux-headers パッケージには、scripts/dtc が含まれていないので dtc コマンドへのフルパスを DTC 変数で指定する必要があります。
+ビルド済みの source tree を KDIR 変数で指定する場合は不要です。
+
+source tree の外で modules_install した場合、
+> Warning: modules_install: missing 'System.map' file. Skipping depmod.
+
+となり、depmod が実行されないので手動で depmod する。
+
+
 ## 使い方
 
 /boot/firmware/config.txt へ下記の様にに記述する。
@@ -31,6 +50,9 @@ dtoverlay=vc4-kms-dsi-7inch
 
 > raspberrypi-ts ドライバがアクセスしないレジスタがリードされると、SCK を Low にしたままになり、タッチ操作およびバックライト制御がでなくなる。
 > 電源OFFするまで復旧しない。
+
+vc4-kms-dsi-7inch パラメータに disable_touch を指定することで edt-ft5506 を無効にし、代わりにこのドライバを使用します。
+
 
 Pi 4 までは、touchscreen は firmware 配下でした。  
 ```
